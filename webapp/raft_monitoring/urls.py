@@ -9,4 +9,9 @@ urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
     url(r'^create_new_node/', views.create_new_node),
+    url(r'^node_stoped/', views.node_stoped),
+    url(r'^log_read/', views.log_read),
+    url(r'^log_write/', views.log_write),
+    url(r'^servers_list/', views.servers_list),
+    url(r'^server/(?P<pk>\d+)/$', views.server_info, name='server_info'),
 ]

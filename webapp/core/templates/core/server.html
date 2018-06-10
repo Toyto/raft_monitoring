@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Server</h2>
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Requests Processed: {{ requests_processed }}</h3>
+        </div>
+        <div class="col-sm-6">
+            <h3>Active Time: {{ active_time }}</h3>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>Read Requests Processed: {{ server.read_amount }}</h4>
+        </div>
+        <div class="col-sm-6">
+            <h4>Write Requests Processed: {{ server.write_amount }}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <canvas id="ReadRequests"></canvas>
+        </div>
+        <div class="col-sm-6">
+            <canvas id="WriteRequests"></canvas>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+ <script type="text/javascript">
+    var chart_reads = document.getElementById('ReadRequests').getContext('2d');
+    var chart_writes = document.getElementById('WriteRequests').getContext('2d');
+    var intervals = "{{ intervals|escapejs }}";
+    intervals = intervals.replace('[', '').replace(']', '').replace(/'/g, '"');
+    intervals = JSON.parse("[" + intervals + "]");
+    var num_of_reads = "{{ server.read_amount }}";
+    num_of_reads = num_of_reads.replace('[', '').replace(']', '').replace(/'/g, '"');
+    num_of_reads = JSON.parse("[" + num_of_reads + "]");
+    var num_of_writes = "{{ server.write_amount }}";
+    num_of_writes = num_of_writes.replace('[', '').replace(']', '').replace(/'/g, '"');
+    num_of_writes = JSON.parse("[" + num_of_writes + "]");
+    var r_chart = new Chart(chart_reads, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: intervals,
+            datasets: [{
+                label: "Reads",
+                backgroundColor: 'rgb(80, 128, 240)',
+                borderColor: 'rgb(0, 0, 0)',
+                data: num_of_reads,
+            }]
+        },
+
+        // Configuration options go here
+        options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    max: 5000,
+                }
+            }]
+        }
+    }
+    });
+    var w_chart = new Chart(chart_writes, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: intervals,
+            datasets: [{
+                label: "Writes",
+                backgroundColor: 'rgb(80, 128, 240)',
+                borderColor: 'rgb(0, 0, 0)',
+                data: num_of_writes,
+            }]
+        },
+
+        // Configuration options go here
+        options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                    max: 2000,
+                }
+            }]
+        }
+    }
+    });
+ </script>
+{% endblock %}

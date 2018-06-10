@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Servers List</h2>
+    <table class="table table-condensed table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Port</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for server in servers_list %}
+                <tr>
+                    <td><a href="{% url 'server_info' server.pk %}">{{ server.address }}</a></td>
+                    <td>{{ server.port }}</td>
+                    <td class="btn {% if server.active %} btn-success {% else %} btn-danger {% endif %}">{{ server.active }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-sm-6">
+            <canvas id="Activity"></canvas>
+        </div>
+        <div class="col-sm-6">
+            <canvas id="Utilization"></canvas>
+        </div>
+    </div>
+    
+        
+{% endblock %}
+{% block js %}
+ <script type="text/javascript">
+    var chart_activity = document.getElementById('Activity').getContext('2d');
+    var chart_utilization = document.getElementById('Utilization').getContext('2d');
+    var intervals = "{{ intervals|escapejs }}";
+    intervals = intervals.replace('[', '').replace(']', '').replace(/'/g, '"');
+    intervals = JSON.parse("[" + intervals + "]");
+    var num_of_active_servers = "{{ num_of_active_servers }}";
+    num_of_active_servers = num_of_active_servers.replace('[', '').replace(']', '').replace(/'/g, '"');
+    num_of_active_servers = JSON.parse("[" + num_of_active_servers + "]");
+    var utilization = "{{ utilization }}";
+    utilization = utilization.replace('[', '').replace(']', '').replace(/'/g, '"');
+    utilization = JSON.parse("[" + utilization + "]");
+    var a_chart = new Chart(chart_activity, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: intervals,
+            datasets: [{
+                label: "Activity",
+                backgroundColor: 'rgb(80, 128, 240)',
+                borderColor: 'rgb(0, 0, 0)',
+                data: num_of_active_servers,
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+    var u_chart = new Chart(chart_utilization, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: intervals,
+            datasets: [{
+                label: "Utilization",
+                backgroundColor: 'rgb(80, 128, 240)',
+                borderColor: 'rgb(0, 0, 0)',
+                data: utilization,
+            }]
+        },
+
+        // Configuration options go here
+        options: {}
+    });
+ </script>
+{% endblock %}
