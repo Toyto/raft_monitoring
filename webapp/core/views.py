@@ -18,11 +18,12 @@ def create_new_node(request):
 
 def node_stoped(request):
     node_data = request.GET
-    ServerLog.objects.create(
+    server = ServerLog.objects.get(
         address=node_data.get('address'), 
         port=node_data.get('port'),
-        active=False
     )
+    server.active = False
+    server.save()
     return JsonResponse({'success': True})
 
 
